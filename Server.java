@@ -112,4 +112,15 @@ public class Server {
         Collections.sort(times);
         return times;
     }
+
+    public void disconnect() {
+        try {
+            if (server != null && !server.isClosed()) {
+                server.close();
+                System.out.println("Server disconnected");
+            }
+        } catch (IOException e) {
+            System.err.println("Error disconnecting server: " + e.getMessage());
+        }
+    }
 }

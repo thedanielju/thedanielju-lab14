@@ -18,21 +18,13 @@ public class Client{
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
-    public boolean sendHandshake() throws IOException {
-        final int handshake = 12345;
+    public void handshake() throws IOException {
+        int handshake = 12345;
         out.println(handshake);
-        String response = in.readLine();
-        if (response != null && response.contains("couldn't handshake")) {
-            System.out.println("Handshake failed: " + response);
-            return false;
-        }
-        System.out.println("Connected to server successfully");
-        return true;
     }
 
-    public String factorize(long number) throws IOException {
+    public String request(String number) throws IOException {
         out.println(number);
-
         String response = in.readLine();
         return response;
     }
@@ -47,5 +39,9 @@ public class Client{
             System.err.println("Error while disconnecting: " + e.getMessage());
             throw e;
         }
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 }
