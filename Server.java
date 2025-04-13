@@ -6,6 +6,7 @@
 import java.util.*;
 import java.net.*;
 import java.io.*;
+import java.time.*;
 
 public class Server {
     private ServerSocket server;
@@ -18,15 +19,21 @@ public class Server {
         System.out.println("Server started on port " + port);
     }
 
-    public void accept(int numClients) {
+    public void serve(int numClients) {
         for (int i = 0; i < numClients; i++) {
-            ClientHandler handler = new ClientHandler();
-            handler.start();
+            try {
+                Socket clientSocket = server.accept();
+                System.out.println("Client connected");
+                ClientHandler handler = new ClientHandler(clientSocket);
+                handler.start(); //blocking method
+            } catch (IOException e) {
+                System.err.println("Error accepting client connection: " + e.getMessage());
+            }
         }
     }
 
     private class ClientHandler extends Thread {
-        private Socket clientSocket;
+        private Socket clientSocket; //stores the reference from server.accept 
         public ClientHandler(Socket socket) { //initalizes client socket, corresponding to server socket
             this.clientSocket = socket;
         }
@@ -40,10 +47,11 @@ public class Server {
                     
                 }
 
-                BufferedReader in = new BufferedReader(new InputStream(clientSocket.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 
                 //validate handshake
+                //reads one line, converts to integer, checks with handshake
                 int ClientHandshake = Integer.parseInt(in.readLine());
                 if (ClientHandshake != handshake) { //handshake corresponds to 12345
                     out.println("Invalid handshake");
@@ -52,10 +60,12 @@ public class Server {
                 }
 
                 String request;
+
+                //waits for and reads a line of text, continues as long as client sends data
                 while((request = in.readLine()) != null) {
                     try {
-                        long number = Long.parseLong(request);
-                        int factors = countFactors(number);
+                        long number = Long.parseLong(request); //converts string to long integer
+                        int factors = countFactors(number); //counts factors
                         out.println("The number " + number + " has " + factors + " factors"); //unit testing match
                     } catch (NumberFormatException e) {
                         out.println("Invalid number format");
