@@ -18,7 +18,28 @@ public class Server {
         System.out.println("Server started on port " + port);
     }
 
-    public void 
+    public void accept(int numClients) {
+        for (int i = 0; i < numClients; i++) {
+            ClientHandler handler = new ClientHandler();
+            handler.start();
+        }
+    }
 
+    private class ClientHandler extends Thread {
+        private Socket clientSocket;
+        public ClientHandler(Socket socket) { //initalizes client socket, corresponding to server socket
+            this.clientSocket = socket;
+        }
+        @Override
+        
+        public void run() { //inherited run method, modified
+            try {
+                Socket client = server.accept(); //runs accept method on client socket
+                //code for client handling
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }
