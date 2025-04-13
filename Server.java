@@ -66,6 +66,12 @@ public class Server {
                 while((request = in.readLine()) != null) {
                     try {
                         long number = Long.parseLong(request); //converts string to long integer
+
+                        if (number > Integer.MAX_VALUE) { //checks if the number is too large (unit test 5)
+                            out.println("There was an exception on the server");
+                            continue;
+                        }
+                        
                         int factors = countFactors(number); //counts factors
                         out.println("The number " + number + " has " + factors + " factors"); //unit testing match
                     } catch (NumberFormatException e) {
@@ -83,9 +89,11 @@ public class Server {
 
     private int countFactors(long number) {
         int count = 0;
-        for (long i = 1; i <= number; i++) {
-            if (number % i == 0) {
-                count++;
+        for (long i = 1; i * i <= number; i++) {
+            if (i * i != number) {
+                count += 2;
+            } else {
+                count += 1;
             }
         }
         return count;
