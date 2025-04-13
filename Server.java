@@ -31,15 +31,53 @@ public class Server {
             this.clientSocket = socket;
         }
         @Override
-        
+
         public void run() { //inherited run method, modified
             try {
-                Socket client = server.accept(); //runs accept method on client socket
-                //code for client handling
-            } catch (Exception e) {
+                long connectionTime = System.currentTimeMillis();
+                synchronized (connectionTimes) { //corresponds to List connectionTimes
+                    connectionTimes.add(connectionTime);
+                    
+                }
+
+                BufferedReader in = new BufferedReader(new InputStream(clientSocket.getInputStream()));
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+
+                //validate handshake
+                int ClientHandshake = Integer.parseInt(in.readLine());
+                if (ClientHandshake != handshake) { //handshake corresponds to 12345
+                    out.println("Invalid handshake");
+                    clientSocket.close();
+                    return;
+                }
+
+                String request;
+                while((request = in.readLine()) != null) {
+                    try {
+                        long number = Long.parseLong(request);
+                        int factors = countFactors(number);
+                        out.println("The number " + number + " has " + factors + " factors"); //unit testing match
+                    } catch (NumberFormatException e) {
+                        out.println("Invalid number format");
+                    } 
+                }
+
+                clientSocket.close();
+
+                } catch(IOException e) {
                 e.printStackTrace();
+            } 
+        }
+    }
+
+    private int countFactors(long number) {
+        int count = 0;
+        for (long i = 1; i <= number; i++) {
+            if (number % i == 0) {
+                count++;
             }
         }
+        return count;
     }
 
 }
