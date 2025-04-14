@@ -71,7 +71,7 @@ public class Server {
                             out.println("There was an exception on the server");
                             continue;
                         }
-                        
+
                         int factors = countFactors(number); //counts factors
                         out.println("The number " + number + " has " + factors + " factors"); //unit testing match
                     } catch (NumberFormatException e) {
@@ -89,14 +89,19 @@ public class Server {
 
     private int countFactors(long number) {
         int count = 0;
+        
         for (long i = 1; i * i <= number; i++) {
-            if (i * i != number) {
-                count += 2;
-            } else {
-                count += 1;
-            }
+            if (number % i == 0) {
+                if (i * i != number) {
+                    count += 2;
+                } else {
+                    count += 1;
+                }
+            } 
         }
+
         return count;
+
     }
 
     public ArrayList<LocalDateTime> getConnectedTimes() {

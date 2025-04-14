@@ -3,7 +3,6 @@
 //send factorization message
 //recieve and display result
 
-
 import java.io.*;
 import java.net.*;
 
